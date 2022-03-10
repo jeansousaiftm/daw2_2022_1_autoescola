@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
+use App\Models\Carro;
+
 class CarroController extends Controller
 {
     /**
@@ -13,7 +15,12 @@ class CarroController extends Controller
      */
     public function index()
     {
-        return view("carro.index");
+		$carro = new Carro();
+		$carros = Carro::All();
+        return view("carro.index", [
+			"carro" => $carro,
+			"carros" => $carros
+		]);
     }
 
     /**
@@ -34,7 +41,21 @@ class CarroController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        if ($request->get("id") != "") {
+			$carro = Carro::Find($request->get("id"));
+		} else {
+			$carro = new Carro();
+		}
+		
+		$carro->marca = $request->get("marca");
+		$carro->modelo = $request->get("modelo");
+		$carro->placa = $request->get("placa");
+		$carro->cor = $request->get("cor");
+		$carro->ano = $request->get("ano");
+		
+		$carro->save();
+		
+		return redirect("/carro");		
     }
 
     /**
@@ -56,7 +77,12 @@ class CarroController extends Controller
      */
     public function edit($id)
     {
-        //
+        $carro = Carro::Find($id);
+		$carros = Carro::All();
+		return view("carro.index", [
+			"carro" => $carro,
+			"carros" => $carros
+		]);
     }
 
     /**
@@ -79,6 +105,7 @@ class CarroController extends Controller
      */
     public function destroy($id)
     {
-        //
+        Carro::Destroy($id);
+		return redirect("/carro");
     }
 }
